@@ -3,7 +3,7 @@ provider "azurerm" {
   features {}
 }
 
-
+/*
 # Create a resource group
 resource "azurerm_resource_group" "example" {
   name     = "example-resources"
@@ -23,5 +23,13 @@ resource "azurerm_resource_group" "blue" {
 # Create a resource group
 resource "azurerm_resource_group" "red" {
   name     = "Red-RG"
+  location = "eastus"
+}
+*/
+
+
+# Create a resource group
+resource "azurerm_resource_group" "orange" {
+  name     = "Orange-RG"
   location = "eastus"
 }

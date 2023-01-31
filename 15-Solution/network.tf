@@ -42,11 +42,11 @@ resource "azurerm_subnet" "external" {
 }
 
 
-## Network Interface 
+## Network Interface Front
 
-resource "azurerm_network_interface" "example" {
+resource "azurerm_network_interface" "front" {
   count               = var.my_vm_count
-  name                = "Nic-${count.index}"
+  name                = "front-Nic-${count.index}"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
@@ -55,16 +55,50 @@ resource "azurerm_network_interface" "example" {
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
     #public_ip_address_id          = azurerm_public_ip.example.id
-    public_ip_address_id          = element(azurerm_public_ip.example.*.id, count.index)
+    public_ip_address_id          = element(azurerm_public_ip.front.*.id, count.index)
   }
 }
 
 
 ## Public IP Config 
 
-resource "azurerm_public_ip" "example" {
+resource "azurerm_public_ip" "front" {
   count               = var.my_vm_count
-  name                = "myPublicIP-${count.index}"
+  name                = "front-myPublicIP-${count.index}"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  allocation_method   = "Dynamic"
+
+  tags = { 
+    environment = "Dev"
+  }
+}
+
+
+
+## Network Interface back
+
+resource "azurerm_network_interface" "back" {
+  count               = var.my_vm_count
+  name                = "back-Nic-${count.index}"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  ip_configuration {
+    name                          = "internal-${count.index}"
+    subnet_id                     = azurerm_subnet.internal.id
+    private_ip_address_allocation = "Dynamic"
+    #public_ip_address_id          = azurerm_public_ip.example.id
+    public_ip_address_id          = element(azurerm_public_ip.back.*.id, count.index)
+  }
+}
+
+
+## Public IP Config 
+
+resource "azurerm_public_ip" "back" {
+  count               = var.my_vm_count
+  name                = "back-myPublicIP-${count.index}"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   allocation_method   = "Dynamic"
@@ -98,12 +132,3 @@ resource "azurerm_network_security_group" "example" {
     environment = "Dev"
   }
 }
-
-/*
-## NSG Assocation 
-
-resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.example.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-*/

@@ -44,7 +44,7 @@ locals {
     Owner   = "Amit Vashist"
     Team    = "DevOps"
     Env     = "Production"
-    Name    = local.default_name
+    Name    = upper(local.default_name)
  }
 }
 

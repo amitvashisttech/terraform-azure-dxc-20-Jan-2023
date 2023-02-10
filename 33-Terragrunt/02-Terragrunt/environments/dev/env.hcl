@@ -1,3 +1,3 @@
 locals {
-  env_name        = "Daily"
+  env_name        = "Develpment"
 }
